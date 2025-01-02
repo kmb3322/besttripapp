@@ -62,6 +62,35 @@ const mockGroups: Group[] = [
       "/images/image12.jpg",
     ],
   },
+  {
+    id: 4,
+    name: "몰입캠프",
+    nickname: "열정 가득 우리팀",
+    coverImage: "/images/image1.jpg",
+    members: ["홍길동", "김코딩", "박해커"],
+    places: ["서울", "분당", "수원"],
+    dates: ["2025-03-10 ~ 2025-03-12"],
+    galleryImages: [
+      "/images/image10.jpg",
+      "/images/image11.jpg",
+      "/images/image12.jpg",
+    ],
+  },
+  {
+    id: 6,
+    name: "이얍얍",
+    nickname: "열정 가득 우리팀",
+    coverImage: "/images/image1.jpg",
+    members: ["홍길동", "김코딩", "박해커"],
+    places: ["서울", "분당", "수원"],
+    dates: ["2025-03-10 ~ 2025-03-12"],
+    galleryImages: [
+      "/images/image10.jpg",
+      "/images/image11.jpg",
+      "/images/image12.jpg",
+    ],
+  },
+
 ];
 
 export default function Home() {
