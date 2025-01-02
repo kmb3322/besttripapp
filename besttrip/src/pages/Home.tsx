@@ -75,10 +75,23 @@ export default function Home() {
   // 스와이프(드래그) 시작 Y좌표
   const startYRef = useRef<number | null>(null);
 
+  // Define isHeaderCollapsed based on isSheetOpen
+  const isHeaderCollapsed = isSheetOpen;
+
   useEffect(() => {
     if (headerRef.current) {
       setHeaderHeight(headerRef.current.offsetHeight);
     }
+
+    // Optional: Update headerHeight on window resize
+    const handleResize = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleSelectGroup = (group: Group) => {
@@ -114,7 +127,7 @@ export default function Home() {
   };
 
   return (
-    <Flex direction="column" h="100vh"  w="100vw" position="relative" overflow="hidden">
+    <Flex direction="column" h="100vh" position="relative" overflow="hidden">
       {/* 상단 영역 */}
       {!isHeaderCollapsed && (
         <Box bg="white" boxShadow="md">
@@ -183,7 +196,7 @@ export default function Home() {
         overflowY="auto"
       >
         {/* 아래 내용: GroupDetail + Gallery */}
-        <GroupDetail group={selectedGroup} isHeaderCollapsed={isSheetOpen} />
+        <GroupDetail group={selectedGroup} isHeaderCollapsed={isHeaderCollapsed} />
         <GroupGallery group={selectedGroup} />
 
         {/* 하단 여백 (탭바 가려짐 방지) */}
