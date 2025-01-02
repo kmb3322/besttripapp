@@ -106,12 +106,14 @@ export default function Home() {
         <Box bg="white" boxShadow="md">
           <Text
             fontWeight="bold"
-            fontSize="lg"
-            p={4}
+            fontSize="2xl"
+            pt={6}
+            pb={1}
+            pl={5}
             textAlign="left"
             bg="white"
           >
-            나의 그룹
+            My Travel Log
           </Text>
           <MyGroupStoryScroll
             groups={mockGroups}

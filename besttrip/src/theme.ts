@@ -19,8 +19,8 @@ const colors = {
 const customTheme = extendTheme({
   colors,
   fonts: {
-    heading: "'Noto Sans KR', sans-serif",
-    body: "'Noto Sans KR', sans-serif",
+    heading: "'Inter', sans-serif",
+    body: "'Inter', sans-serif",
   },
 });
 
