@@ -114,8 +114,30 @@ export default function Home() {
   };
 
   return (
-    <Flex w="100vw" h="100vh" position="relative" overflow="hidden">
-      {/* 상단 헤더 (나의그룹 + MyGroupStoryScroll) */}
+    <Flex direction="column" h="100vh"  w="100vw" position="relative" overflow="hidden">
+      {/* 상단 영역 */}
+      {!isHeaderCollapsed && (
+        <Box bg="white" boxShadow="md">
+          <Text
+            fontWeight="bold"
+            fontSize="2xl"
+            pt={6}
+            pb={1}
+            pl={5}
+            textAlign="left"
+            bg="white"
+          >
+            My Travel Log
+          </Text>
+          <MyGroupStoryScroll
+            groups={mockGroups}
+            selectedGroupId={selectedGroup.id}
+            onSelectGroup={handleSelectGroup}
+          />
+        </Box>
+      )}
+
+      {/* 그룹 상세 (대표 사진 + 상세 정보) */}
       <Box
         ref={headerRef}
         position="absolute"
