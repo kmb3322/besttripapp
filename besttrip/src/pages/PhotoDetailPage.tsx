@@ -1,19 +1,39 @@
 // src/pages/PhotoDetailPage.tsx
 
-import { Box, Image as ChakraImage, Heading, Text } from "@chakra-ui/react";
+import { Box, Image as ChakraImage, Heading, Spinner, Text } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-// ↑ react-router-dom의 useLocation, useParams 등을 사용 (라우팅 전략에 따라 달라질 수 있음)
 
-/**
- * PhotoDetailPage는 특정 사진의 src, date, latitude, longitude를 받아
- * 화면에 표시하는 페이지
- */
+interface Photo {
+  originalSrc: string;
+  displaySrc: string;
+  date: Date | null;
+  latitude: number | null;
+  longitude: number | null;
+}
+
 export default function PhotoDetailPage() {
-  // 예시로, GroupGallery에서 링크로 넘긴 state를 받는다 (React Router)
   const location = useLocation();
-  // location.state.photo → { src, date, latitude, longitude }
+  const { photo } = (location.state as { photo: Photo }) || {};
 
-  const { photo } = (location.state as { photo: any }) || {};
+  console.log("Received photo object:", photo);
+
+  const [processedSrc, setProcessedSrc] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!photo) {
+      setLoading(false);
+      return;
+    }
+
+    const { displaySrc, originalSrc } = photo;
+
+    // 이미 GroupGallery에서 HEIC 이미지를 변환했으므로, 추가 변환은 필요하지 않습니다.
+    setProcessedSrc(displaySrc);
+    setLoading(false);
+  }, [photo]);
 
   // 안전 처리
   if (!photo) {
@@ -24,7 +44,7 @@ export default function PhotoDetailPage() {
     );
   }
 
-  const { src, date, latitude, longitude } = photo;
+  const { date, latitude, longitude } = photo;
 
   // 날짜 / 위치 null 체크
   const hasDate = !!date;
@@ -37,20 +57,26 @@ export default function PhotoDetailPage() {
       </Heading>
 
       {/* 실제 이미지 */}
-      <ChakraImage
-        src={src}
-        alt="detail-img"
-        w="100%"
-        maxW="500px"
-        borderRadius="md"
-        mb={4}
-      />
+      {loading ? (
+        <Spinner size="xl" />
+      ) : error ? (
+        <Text color="red.500">{error}</Text>
+      ) : (
+        <ChakraImage
+          src={processedSrc || originalSrc}
+          alt="detail-img"
+          w="100%"
+          maxW="500px"
+          borderRadius="md"
+          mb={4}
+        />
+      )}
 
       {/* 날짜 */}
       <Text fontWeight="bold">촬영 날짜</Text>
       {hasDate ? (
         <Text mb={2}>
-          {(new Date(date)).toLocaleString()}
+          {date ? new Date(date).toLocaleString() : "날짜 정보가 존재하지 않습니다."}
         </Text>
       ) : (
         <Text color="gray.500" mb={2}>
@@ -62,12 +88,10 @@ export default function PhotoDetailPage() {
       <Text fontWeight="bold">위치 정보</Text>
       {hasLocation ? (
         <Text>
-          위도: {latitude.toFixed(6)}, 경도: {longitude.toFixed(6)}
+          위도: {latitude!.toFixed(6)}, 경도: {longitude!.toFixed(6)}
         </Text>
       ) : (
-        <Text color="gray.500">
-          위치 정보가 존재하지 않습니다.
-        </Text>
+        <Text color="gray.500">위치 정보가 존재하지 않습니다.</Text>
       )}
     </Box>
   );

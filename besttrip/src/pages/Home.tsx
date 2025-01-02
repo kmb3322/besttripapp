@@ -1,22 +1,9 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { TouchEvent, useEffect, useRef, useState } from "react";
+import { UIEvent, useRef, useState } from "react";
 import BottomTabBar from "../components/BottomTabBar";
 import GroupDetail from "../components/GroupDetail";
-import GroupGallery from "../components/GroupGallery";
 import MyGroupStoryScroll from "../components/MyGroupStoryScroll";
 import { Group } from "../types/group";
-
-// Group 인터페이스 예시
-// interface Group {
-//   id: number;
-//   name: string;
-//   nickname: string;
-//   coverImage: string;
-//   members: string[];      // 여기에 실제 프로필 이미지 파일명 배열 (e.g. ["profile1.jpg", ...])
-//   places: string[];
-//   dates: string[];
-//   galleryImages: string[];
-// }
 
 const mockGroups: Group[] = [
   {
@@ -24,7 +11,6 @@ const mockGroups: Group[] = [
     name: "친구들과의 제주도 여행",
     nickname: "제주 불주먹",
     coverImage: "/images/image1.jpg",
-    // members: 이제 이름 대신 'profileN.jpg' 형태로
     members: ["profile1.jpg", "profile2.jpg", "profile3.jpg"],
     places: ["제주도", "우도", "성산일출봉"],
     dates: ["2024-10-12 ~ 2024-10-15"],
@@ -32,6 +18,20 @@ const mockGroups: Group[] = [
       "/images/image2.jpg",
       "/images/image3.jpg",
       "/images/image4.jpg",
+      "/images/IMG_2198.HEIC",
+      "/images/IMG_2325.HEIC",
+      "/images/IMG_2127.heic",
+      "/images/IMG_2124.HEIC",
+      "/images/IMG_2123.HEIC",
+      "/images/IMG_2121.HEIC",
+      "/images/IMG_2120.HEIC",
+      "/images/IMG_2118.HEIC",
+      "/images/IMG_2119.HEIC",
+      "/images/IMG_2117.HEIC",
+      "/images/IMG_2115.HEIC",
+      "/images/IMG_2109.HEIC",
+      "/images/IMG_2198.HEIC",
+      
     ],
   },
   {
@@ -95,159 +95,77 @@ const mockGroups: Group[] = [
 
 export default function Home() {
   const [selectedGroup, setSelectedGroup] = useState<Group>(mockGroups[0]);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // 헤더 영역 높이 측정
-  const [headerHeight, setHeaderHeight] = useState(0);
-  const headerRef = useRef<HTMLDivElement>(null);
+  // 스크롤 위치 감지
+  const [scrollTop, setScrollTop] = useState(0);
 
-  // 스와이프(드래그) 시작 Y좌표
-  const startYRef = useRef<number | null>(null);
+  // threshold: 이 값을 넘으면 ‘작은 헤더’를 보여준다
+  const COLLAPSE_THRESHOLD = 250;
 
-  // Define isHeaderCollapsed based on isSheetOpen
-  const isHeaderCollapsed = isSheetOpen;
+  // 큰 헤더 영역 참조(높이 측정에 필요하다면)
+  const bigHeaderRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (headerRef.current) {
-      setHeaderHeight(headerRef.current.offsetHeight);
-    }
-
-    // Optional: Update headerHeight on window resize
-    const handleResize = () => {
-      if (headerRef.current) {
-        setHeaderHeight(headerRef.current.offsetHeight);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
+  // 그룹 선택 시
   const handleSelectGroup = (group: Group) => {
     setSelectedGroup(group);
-    setIsSheetOpen(false); // 새 그룹 선택 시 바텀시트 닫기
   };
 
-  // 터치 시작
-  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
-    startYRef.current = e.touches[0].clientY;
+  // 스크롤 이벤트 핸들러
+  const handleScroll = (e: UIEvent<HTMLDivElement>) => {
+    setScrollTop(e.currentTarget.scrollTop);
   };
 
-  // 터치 이동
-  const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
-    // (실시간 드래그 로직 필요 시 작성)
-  };
-
-  // 터치 끝
-  const handleTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
-    if (startYRef.current !== null) {
-      const endY = e.changedTouches[0].clientY;
-      const diff = startYRef.current - endY;
-
-      // 스와이프 거리가 50 이상이면 열거나 닫기
-      if (diff > 50) {
-        setIsSheetOpen(true);
-      } else if (diff < -50) {
-        setIsSheetOpen(false);
-      }
-
-      startYRef.current = null;
-    }
-  };
+  // 작은 헤더(“축소 헤더”)를 보일지 여부
+  const showCollapsedHeader = scrollTop > COLLAPSE_THRESHOLD;
 
   return (
-    <Flex direction="column" h="100vh" position="relative" overflow="hidden">
-      {/* 상단 영역 */}
-      {!isHeaderCollapsed && (
-        <Box bg="white" boxShadow="md">
-          <Text
-            fontWeight="bold"
-            fontSize="2xl"
-            pt={6}
-            pb={1}
-            pl={5}
-            textAlign="left"
-            bg="white"
-          >
-            My Travel Log
-          </Text>
-          <MyGroupStoryScroll
-            groups={mockGroups}
-            selectedGroupId={selectedGroup.id}
-            onSelectGroup={handleSelectGroup}
-          />
-        </Box>
-      )}
-
-      {/* 그룹 상세 (대표 사진 + 상세 정보) */}
+    <Flex direction="column" h="100vh" bg="#F2F2F2">
+      {/* 스크롤 영역 */}
       <Box
-        ref={headerRef}
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bg="white"
-        boxShadow="md"
-        zIndex={10}
-      >
-        <Text
-            fontWeight="bold"
-            fontSize="2xl"
-            pt={6}
-            pb={1}
-            pl={5}
-            textAlign="left"
-            bg="white"
-          >
-            My Travel Log
-          </Text>
-        <MyGroupStoryScroll
-          groups={mockGroups}
-          selectedGroupId={selectedGroup.id}
-          onSelectGroup={handleSelectGroup}
-        />
-      </Box>
-
-      {/*
-        바텀시트 영역:
-        - isSheetOpen = false → headerHeight만큼 내려가도록
-        - isSheetOpen = true  → 완전히 위로 translateY(0) → 상단 덮음
-      */}
-      <Box
-        position="absolute"
-        top={0}
-        left={0}
-        right={0}
-        bottom={0}
-        bg="white"
-        boxShadow="0 -5px 10px rgba(0,0,0,0.1)"
-        zIndex={20}
-        borderTopRadius={isSheetOpen ? 0 : "20px"}
-        transform={
-          isSheetOpen ? "translateY(0)" : `translateY(${headerHeight}px)`
-        }
-        transition="transform 0.3s ease"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        flex="1"
         overflowY="auto"
+        onScroll={handleScroll}
       >
-        {/* 아래 내용: GroupDetail + Gallery */}
-        <GroupDetail group={selectedGroup} isHeaderCollapsed={isHeaderCollapsed} />
-        <GroupGallery group={selectedGroup} />
+        {/* -- (1) 큰 헤더 (스크롤되며 사라짐) -- */}
+        <Box ref={bigHeaderRef} bg="white" pb={4}>
+          {/* 타이틀 */}
+          <Text fontWeight="bold" fontSize={35} ml={5} pt={6} pb={2}>
+            My Travel Log
+          </Text>
 
-        {/* 하단 여백 (탭바 가려짐 방지) */}
-        <Box height="100px" />
+          {/* MyGroupStoryScroll */}
+          <Box
+            bg="white"
+            boxShadow="md"
+            pt={4}
+            pb={4}
+            mb={2}
+          >
+            <MyGroupStoryScroll
+              groups={mockGroups}
+              selectedGroupId={selectedGroup.id}
+              onSelectGroup={handleSelectGroup}
+            />
+          </Box>
+        </Box>
+
+        {/* -- (2) GroupDetail & 기타 본문 -- */}
+        <GroupDetail
+          group={selectedGroup}
+          // 큰 헤더가 사라지면(=scrollTop > threshold) GroupDetail 내부 이미지를 작게 렌더링
+          isHeaderCollapsed={showCollapsedHeader}
+        />
+
+
+        {/* 컨텐츠가 더 있을 경우 ... */}
+        <Box height="300px" bg="transparent" />
       </Box>
 
-      {/* 하단 탭바 (항상 최상위 zIndex) */}
-      <Box
-        position="absolute"
-        bottom={0}
-        left={0}
-        right={0}
-        zIndex={999}
-      >
+      {/* -- (3) 작은 헤더 (고정, 조건부 렌더링) -- */}
+      {showCollapsedHeader}
+
+      {/* 하단 탭바 (고정) */}
+      <Box position="relative" height="60px">
         <BottomTabBar />
       </Box>
     </Flex>

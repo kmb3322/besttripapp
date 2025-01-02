@@ -1,134 +1,111 @@
+// GroupDetail.tsx
+
 import { Box, Button, Image as ChakraImage, Flex, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import { Group } from "../types/group";
+import GroupGallery from "./GroupGallery"; // ❶ GroupGallery 임포트
 
-// 프리셋: motion(Box)를 확장
 const MotionBox = motion(Box);
 
 interface GroupDetailProps {
   group: Group;
-  isHeaderCollapsed: boolean; // Home.tsx에서의 isSheetOpen
+  isHeaderCollapsed: boolean; // ❷
 }
 
-export default function GroupDetail({
-  group,
-  isHeaderCollapsed,
-}: GroupDetailProps) {
-  // 아이콘(이미지) 펼침/접힘 상태
+export default function GroupDetail({ group, isHeaderCollapsed }: GroupDetailProps) {
+  // 아이콘 펼침/접힘 상태
   const [areIconsExpanded, setAreIconsExpanded] = useState(false);
 
-  // 클릭 시 펼침 토글
   const handleIconToggle = () => {
     setAreIconsExpanded((prev) => !prev);
   };
+
+  // 스크롤이 threshold를 넘어서면: 대표 이미지 높이를 줄이고,
+  const coverImageHeight = isHeaderCollapsed ? "200px" : "300px";
 
   return (
     <Box w="100%" mb={4}>
       {/* 대표 이미지 영역 */}
       <Box
-        position="relative"
-        borderTopLeftRadius={isHeaderCollapsed ? 0 : "20px"}
-        borderTopRightRadius={isHeaderCollapsed ? 0 : "20px"}
-        borderBottomRadius={0}
+        position={isHeaderCollapsed ? "sticky" : "relative"}
+        top={isHeaderCollapsed ? 0 : "auto"}
         overflow="hidden"
-        transition="all 0.3s ease"
+        zIndex={isHeaderCollapsed ? 10 : "auto"}
+        bg={isHeaderCollapsed ? "black" : "transparent"}
       >
-        {/* 실제 배경 이미지 (대표 이미지) */}
+        {/* 메인 커버 이미지 */}
         <ChakraImage
           src={group.coverImage}
           alt={group.name}
           w="100%"
-          h={isHeaderCollapsed ? "200px" : "300px"}
+          h={coverImageHeight}
           objectFit="cover"
           transition="height 0.3s ease"
         />
 
-        {/* 어두운 오버레이 (이미지를 조금 어둡게) */}
-        {isHeaderCollapsed && (
-          <Box
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            // 클릭 이벤트가 통과되도록 pointerEvents="none"
-            pointerEvents="none"
-            bg="linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.2))"
-            transition="all 0.3s ease"
-            zIndex={1} 
-          />
-        )}
-
-        {/* 상단: 왼쪽 화살표, 오른쪽 설정 아이콘 */}
-        {isHeaderCollapsed && (
-          <Flex
-            position="absolute"
-            top="12px"
-            left="12px"
-            right="12px"
-            justifyContent="space-between"
-            alignItems="center"
-            color="white"
-            zIndex={2} // 오버레이보다 위
-          >
-            
-          </Flex>
-        )}
-
-        {/* 바텀시트 열림 시, 이미지 위에 텍스트/버튼/프로필 이미지들 */}
+        {/* 헤더가 축소된 상태일 때 → 이미지 위 오버레이 + 텍스트/버튼 */}
         {isHeaderCollapsed && (
           <>
-            {/* 그룹 별명 / 장소 */}
+            <Box
+              position="absolute"
+              top={0}
+              left={0}
+              right={0}
+              bottom={0}
+              bg="linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.2))"
+              transition="all 0.3s ease"
+              zIndex={1}
+            />
+
+            {/* 그룹 닉네임, 날짜, 멤버들 */}
             <Box
               position="absolute"
               bottom="90px"
               left="20px"
               right="20px"
               zIndex={2}
-              textAlign="left"
               display="flex"
               flexDirection="column"
               gap={2}
+              color="white"
             >
-              <Text fontSize="3xl" fontWeight="bold" color="white" m={-1} mb={-3}>
+              <Text fontSize="3xl" fontWeight="bold" mb={-3}>
                 {group.nickname}
               </Text>
-              <Text fontSize="md" color="white" fontWeight="light" mb={-8}>
-              {group.dates.join(", ")}
+              <Text fontSize="md" fontWeight="light" mb={-6}>
+                {group.dates.join(", ")}
               </Text>
             </Box>
 
-            {/* 프로필 이미지(겹침) + Invite 버튼 */}
+            {/* 멤버 프로필 + Invite 버튼 */}
             <Flex
               position="absolute"
               bottom="20px"
               left="20px"
-              zIndex={2} // 오버레이보다 위
+              zIndex={2}
               alignItems="center"
               gap={3}
             >
-              {/* 프로필 이미지들. marginLeft로 절반씩 겹치기. 클릭 시 펼침 토글 */}
               <Flex onClick={handleIconToggle} cursor="pointer">
                 {group.members.map((profileImage, index) => (
                   <MotionBox
                     key={index}
                     position="relative"
-                    // 첫 번째 이미지는 marginLeft=0, 나머지는 음수/양수
                     animate={{
                       marginLeft:
                         index === 0
                           ? "0px"
                           : areIconsExpanded
-                          ? "10px" // 펼침 상태
-                          : "-16px", // 겹침 상태(절반 이상)
+                          ? "10px"
+                          : "-16px",
                     }}
                     transition={{ duration: 0.3 }}
                     zIndex={group.members.length - index}
                   >
                     <ChakraImage
-                      src={`/images/${profileImage}`} // 예: profile1.jpg
+                      src={`/images/${profileImage}`}
                       alt={profileImage}
                       boxSize="32px"
                       objectFit="cover"
@@ -139,7 +116,6 @@ export default function GroupDetail({
                 ))}
               </Flex>
 
-              {/* Invite 버튼 */}
               <Button
                 size="sm"
                 borderRadius="full"
@@ -156,20 +132,20 @@ export default function GroupDetail({
         )}
       </Box>
 
-      {/* 바텀시트 닫힘(false) 상태 → 아래쪽(이미지 밖)에 정보 표시 */}
+      {/* 헤더가 펼쳐진 상태(스크롤 위): 이미지 아래에 상세정보 표시 */}
       {!isHeaderCollapsed && (
         <Box px={4} pt={4} textAlign="left">
-          <Text fontSize={35} fontWeight="bold" color="black" m={-0.5} mt={-1} mb={0}>
+          <Text fontSize={35} fontWeight="bold" color="black" mb={0}>
             {group.nickname}
           </Text>
-          <Text fontSize={18} fontWeight="light" mt={-1} color="gray.600" >
+          <Text fontSize={18} fontWeight="light" color="gray.600">
             {group.name}
           </Text>
-          <Text mt={-1} fontSize={18}  color="gray.600" >
+          <Text fontSize={16} color="gray.600">
             {group.dates.join(", ")}
           </Text>
 
-          {/* 아래에도 프로필 이미지들을 겹쳐 보여줄 수 있음 */}
+          {/* 멤버들 겹쳐 보여주기 */}
           <Flex mt={3} alignItems="center">
             {group.members.map((profileImage, index) => (
               <Box
@@ -191,12 +167,15 @@ export default function GroupDetail({
               {group.members.join(", ")}
             </Text>
           </Flex>
-
-
-          
-          
         </Box>
       )}
+
+      {/* ❸ GroupGallery 컴포넌트 이동 */}
+      <Box mb={10}></Box>
+      <GroupGallery group={group} isHeaderCollapsed={isHeaderCollapsed} />
+
+      <Box mb={100}></Box>
     </Box>
+    
   );
 }
