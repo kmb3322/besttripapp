@@ -1,7 +1,9 @@
-// src/App.tsx
-import { Box } from '@chakra-ui/react'
-import React from 'react'
-import Home from "./pages/Home"
+import React from 'react';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import PhotoDetailPage from "./pages/PhotoDetailPage";
+
+
 
 const App: React.FC = () => {
   const handleClick = () => {
@@ -10,9 +12,13 @@ const App: React.FC = () => {
 
 
     return (
-      <Box w="100%" minH="100vh" bg="gray.50">
-        <Home />
-      </Box>
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        {/* /photo-detail → PhotoDetailPage */}
+        <Route path="/photo-detail" element={<PhotoDetailPage />} />
+      </Routes>
+    </BrowserRouter>
     );
 
 }
