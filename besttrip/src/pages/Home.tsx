@@ -190,9 +190,17 @@ export default function Home() {
         boxShadow="md"
         zIndex={10}
       >
-        <Text fontWeight="bold" fontSize="lg" p={4} textAlign="center">
-          나의 그룹
-        </Text>
+        <Text
+            fontWeight="bold"
+            fontSize="2xl"
+            pt={6}
+            pb={1}
+            pl={5}
+            textAlign="left"
+            bg="white"
+          >
+            My Travel Log
+          </Text>
         <MyGroupStoryScroll
           groups={mockGroups}
           selectedGroupId={selectedGroup.id}
