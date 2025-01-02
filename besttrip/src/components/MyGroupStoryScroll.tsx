@@ -34,12 +34,17 @@ export default function MyGroupStoryScroll({
             transform={isSelected ? "scale(1.05)" : "scale(1.0)"}
           >
             <Box
-              w="60px"
-              h="60px"
-              borderRadius="full"
+              w="120px"
+              h="160px"
+              borderRadius="15"
               overflow="hidden"
-              borderWidth={isSelected ? "2px" : "1px"}
+              //borderWidth={isSelected ? "2px" : "1px"}
               borderColor={isSelected ? "brand.500" : "gray.300"}
+              position="relative"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              bg="gray.100"
             >
               <Image
                 src={group.coverImage}
@@ -47,11 +52,19 @@ export default function MyGroupStoryScroll({
                 objectFit="cover"
                 w="100%"
                 h="100%"
+                opacity={0.7} // Slight transparency for the text to stand out
               />
+              <Text
+                position="absolute"
+                bottom="0"
+                fontSize="xs"
+                fontWeight="bold"
+                color="white"
+                textAlign="center"
+              >
+                {group.nickname}
+              </Text>
             </Box>
-            <Text mt={1} fontSize="xs" textAlign="center">
-              {group.nickname}
-            </Text>
           </Flex>
         );
       })}
