@@ -1,15 +1,27 @@
-// // src/theme.ts
-// import { extendTheme } from '@chakra-ui/react'
+import { extendTheme } from "@chakra-ui/react";
 
-// // 기본 테마를 확장하거나 커스텀 설정을 추가
-// const customTheme = extendTheme({
-//   colors: {
-//     brand: {
-//       100: "#f7fafc",
-//       // 기타 색상 정의...
-//     },
-//   },
-//   // 기타 테마 설정...
-// })
+// 예시 색상
+const colors = {
+  brand: {
+    50: "#e3f2f9",
+    100: "#c5e4f3",
+    200: "#a2d4ec",
+    300: "#7ac1e4",
+    400: "#47a9da",
+    500: "#0088cc", // 주 색상
+    600: "#007ab8",
+    700: "#006ba1",
+    800: "#005885",
+    900: "#003f5e",
+  },
+};
 
-// export default customTheme
+const customTheme = extendTheme({
+  colors,
+  fonts: {
+    heading: "'Noto Sans KR', sans-serif",
+    body: "'Noto Sans KR', sans-serif",
+  },
+});
+
+export default customTheme;
